@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	host   = "localhost"
-	port   = 54320
-	user   = "postgres"
-	dbname = "postgres"
+	host = "localhost"
+	port = 54320
+	user = "postgres"
+	dbname = "bol_db"
 )
 
 var DB *sqlx.DB
