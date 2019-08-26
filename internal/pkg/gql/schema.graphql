@@ -1,0 +1,16 @@
+type Evaluation {
+    id: ID
+    createdTime: Int
+    action: String
+    evaluationPrice: Float
+    targetExitPrice: Float
+    stopLossPrice: Float
+    bolUpper: Float
+    bolLower: Float
+    movingAverage: Float
+}
+
+type Query {
+    evaluation(id: ID): Evaluation
+    evaluations(actionFilter: String): [Evaluation]
+}
