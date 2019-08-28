@@ -27,7 +27,7 @@ func createPriceSnapshotsTable() {
 	createPriceSnapshotsTableQuery := `
 	CREATE TABLE price_snapshots (
 	    price_snapshot_id INT GENERATED ALWAYS AS IDENTITY,
-	    created_time DATE,
+	    created_time TIMESTAMP,
 	    price NUMERIC,
 	    PRIMARY KEY (price_snapshot_id)
 	)
@@ -44,7 +44,7 @@ func createPriceEvaluationsTable() {
 	CREATE TABLE price_evaluations (
 	    price_evaluation_id INT GENERATED ALWAYS AS IDENTITY,
 	    price_snapshot_id INT REFERENCES public.price_snapshots(price_snapshot_id),
-	    created_time DATE,
+	    created_time TIMESTAMP,
 	    action VARCHAR,
 	    evaluation_price NUMERIC,
 	    target_exit_price NUMERIC,
@@ -64,8 +64,8 @@ func createPriceEvaluationsTable() {
 
 func dropAllTables() {
 	dropAllTablesQuery := `
-	DROP TABLE price_snapshots;
 	DROP TABLE price_evaluations;
+	DROP TABLE price_snapshots;
 	`
 
 	_, err := database.DB.Exec(dropAllTablesQuery)

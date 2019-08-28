@@ -1,3 +1,3 @@
 package models
 
-type BolApiModel interface {}
+type BolAPIModel struct {}

@@ -1,10 +1,8 @@
 package server
 
 import (
-	"bolapi/internal/pkg/database"
 	"bolapi/internal/pkg/gql"
 	"bolapi/internal/pkg/resolvers"
-	"fmt"
 	"os"
 
 	"github.com/99designs/gqlgen/handler"
@@ -16,13 +14,6 @@ var defaultPort = "8080"
 var port string
 
 func init() {
-	err := database.InitDB()
-	defer database.CloseDB()
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	port = os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
