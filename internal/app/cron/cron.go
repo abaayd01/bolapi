@@ -1,13 +1,18 @@
 package cron
 
 import (
+	"bolapi/internal/pkg/crypto_compare"
 	"github.com/robfig/cron"
 	"log"
 )
 
-func Start() error {
+type CronWorker struct {
+	CryptoCompareClient *crypto_compare.CryptoCompareClient
+}
+
+func (cW *CronWorker) Start() error {
 	c := cron.New()
-	err := c.AddFunc("@every 10s", func() { log.Println("every ten seconds") })
+	err := c.AddFunc("@every 10s", func() { takeSnapshot(cW.CryptoCompareClient) })
 
 	c.Start()
 
@@ -16,4 +21,10 @@ func Start() error {
 	}
 
 	return nil
+}
+
+func takeSnapshot(client *crypto_compare.CryptoCompareClient) {
+	log.Println("taking snapshot")
+	result, _ := client.GetCurrentPrice("ETH", "USD")
+	log.Println(*result)
 }
