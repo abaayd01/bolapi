@@ -8,12 +8,10 @@ import (
 )
 
 func main() {
-	cryptoCompareApiStub := crypto_compare.APIStub
-
-	client := crypto_compare.CryptoCompareClient{BaseURL: cryptoCompareApiStub.URL}
+	cryptoCompareClient := crypto_compare.CryptoCompareClient{BaseURL: crypto_compare.APIStub.URL}
 
 	cronWorker := cron.CronWorker{
-		CryptoCompareClient: &client,
+		CryptoCompareClient: &cryptoCompareClient,
 	}
 
 	err := cronWorker.Start()
