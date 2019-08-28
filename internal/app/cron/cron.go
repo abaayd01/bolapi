@@ -12,7 +12,7 @@ type CronWorker struct {
 
 func (cW *CronWorker) Start() error {
 	c := cron.New()
-	err := c.AddFunc("@every 10s", func() { takeSnapshot(cW.CryptoCompareClient) })
+	err := c.AddFunc("@every 10s", func() { cW.takePriceSnapshot() })
 
 	c.Start()
 
@@ -23,8 +23,8 @@ func (cW *CronWorker) Start() error {
 	return nil
 }
 
-func takeSnapshot(client *crypto_compare.CryptoCompareClient) {
+func (cW *CronWorker) takePriceSnapshot() {
 	log.Println("taking snapshot")
-	result, _ := client.GetCurrentPrice("ETH", "USD")
+	result, _ := cW.CryptoCompareClient.GetCurrentPrice("ETH", "USD")
 	log.Println(*result)
 }
