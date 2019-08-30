@@ -10,31 +10,26 @@ import (
 	"time"
 )
 
-type CronWorker struct {
+type Worker struct {
 	CryptoCompareClient *crypto_compare.CryptoCompareClient
 	DB                  *sqlx.DB
 }
 
-func (cW *CronWorker) Start() error {
+func (cW *Worker) Start() error {
 	c := cron.New()
 	err := c.AddFunc("@every 2s", func() {
-		err := cW.takePriceSnapshot()
-
-		if err != nil {
-			log.Println(err)
-		}
+		_ = cW.takePriceSnapshot()
 	})
-
-	c.Start()
 
 	if err != nil {
 		return err
 	}
 
+	c.Start()
 	return nil
 }
 
-func (cW *CronWorker) takePriceSnapshot() error {
+func (cW *Worker) takePriceSnapshot() error {
 	log.Println("taking price snapshot...")
 	currentPrice, _ := cW.CryptoCompareClient.GetCurrentPrice("ETH", "USD")
 

@@ -20,7 +20,7 @@ func init() {
 func main() {
 	cryptoCompareClient := crypto_compare.CryptoCompareClient{BaseURL: crypto_compare.APIStub.URL}
 
-	cronWorker := cron.CronWorker{
+	cronWorker := cron.Worker{
 		CryptoCompareClient: &cryptoCompareClient,
 		DB:                  database.DB,
 	}
@@ -32,5 +32,9 @@ func main() {
 		return
 	}
 
-	server.Start()
+	bolAPIServer := server.BolAPIServer{
+		DB:   database.DB,
+	}
+
+	bolAPIServer.Start()
 }

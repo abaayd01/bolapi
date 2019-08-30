@@ -3,26 +3,29 @@ package server
 import (
 	"bolapi/internal/pkg/gql"
 	"bolapi/internal/pkg/resolvers"
-	"os"
-
 	"github.com/99designs/gqlgen/handler"
+	"github.com/jmoiron/sqlx"
 	"log"
 	"net/http"
 )
 
 var defaultPort = "8080"
-var port string
 
-func init() {
-	port = os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
+type BolAPIServer struct {
+	Port *string
+	DB   *sqlx.DB
 }
 
-func Start() {
+func (server *BolAPIServer) Start() {
 	http.Handle("/", handler.Playground("GraphQL playground", "/query"))
 	http.Handle("/query", handler.GraphQL(gql.NewExecutableSchema(gql.Config{Resolvers: &resolvers.Resolver{}})))
+
+	var port string
+	if server.Port != nil {
+		port = *server.Port
+	} else {
+		port = defaultPort
+	}
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
