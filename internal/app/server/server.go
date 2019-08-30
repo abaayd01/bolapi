@@ -1,10 +1,10 @@
 package server
 
 import (
+	"bolapi/internal/pkg/database"
 	"bolapi/internal/pkg/gql"
 	"bolapi/internal/pkg/resolvers"
 	"github.com/99designs/gqlgen/handler"
-	"github.com/jmoiron/sqlx"
 	"log"
 	"net/http"
 )
@@ -13,7 +13,7 @@ var defaultPort = "8080"
 
 type BolAPIServer struct {
 	Port *string
-	DB   *sqlx.DB
+	DB   database.DBInterface
 }
 
 func (server *BolAPIServer) Start() {

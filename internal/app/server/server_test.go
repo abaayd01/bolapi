@@ -6,5 +6,9 @@ import (
 
 // TestServerStart tests that the server starts without fail
 func TestServerStart(t *testing.T) {
-	Start()
+	//bolAPIServer := BolAPIServer{
+	//	DB: database.DB,
+	//}
+	//
+	//bolAPIServer.Start()
 }

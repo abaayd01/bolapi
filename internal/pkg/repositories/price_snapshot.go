@@ -1,8 +1,8 @@
 package repositories
 
 import (
+	"bolapi/internal/pkg/database"
 	"bolapi/internal/pkg/models"
-	"github.com/jmoiron/sqlx"
 	"log"
 )
 
@@ -11,10 +11,10 @@ type PriceSnapshotRepository interface {
 }
 
 type priceSnapshotRepository struct {
-	DB *sqlx.DB
+	DB database.DBInterface
 }
 
-func NewPriceSnapshotRepository(DB *sqlx.DB) *priceSnapshotRepository {
+func NewPriceSnapshotRepository(DB database.DBInterface) *priceSnapshotRepository {
 	return &priceSnapshotRepository{DB: DB}
 }
 

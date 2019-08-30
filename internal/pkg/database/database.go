@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	host = "localhost"
-	port = 54320
-	user = "postgres"
+	host   = "localhost"
+	port   = 54320
+	user   = "postgres"
 	dbname = "bol_db"
 )
 

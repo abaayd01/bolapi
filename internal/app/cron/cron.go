@@ -2,9 +2,9 @@ package cron
 
 import (
 	"bolapi/internal/pkg/crypto_compare"
+	"bolapi/internal/pkg/database"
 	"bolapi/internal/pkg/models"
 	"bolapi/internal/pkg/repositories"
-	"github.com/jmoiron/sqlx"
 	"github.com/robfig/cron"
 	"log"
 	"time"
@@ -12,7 +12,7 @@ import (
 
 type Worker struct {
 	CryptoCompareClient *crypto_compare.CryptoCompareClient
-	DB                  *sqlx.DB
+	DB                  database.DBInterface
 }
 
 func (cW *Worker) Start() error {
