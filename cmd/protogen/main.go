@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	cmd := exec.Command("protoc", "-I", "../proto_files", "../proto_files/bol.proto", "--go_out=plugins=grpc:./internal/pkg/proto")
+	cmd := exec.Command("protoc", "-I", "../proto_files", "../proto_files/bol.proto", "--go_out=plugins=grpc:./internal/pkg/bolproto")
 	out, err := cmd.CombinedOutput()
 	_ = cmd.Run()
 
