@@ -19,6 +19,3 @@ func (q queryResolver) Hello(ctx context.Context) (*string, error) {
 	str := "world!"
 	return &str, nil
 }
-
-
-
