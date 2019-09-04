@@ -38,10 +38,7 @@ func (bC *BolpyClient) EvaluatePrice(req *bolproto.PriceEvaluationRequest) (*bol
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	r, err := bC.Context.PriceEvaluatorClient.EvaluatePrice(ctx, &bolproto.PriceEvaluationRequest{
-		CurrentPrice:     nil,
-		HistoricalPrices: nil,
-	})
+	r, err := bC.Context.PriceEvaluatorClient.EvaluatePrice(ctx, req)
 
 	if err != nil {
 		log.Fatalln(err)
