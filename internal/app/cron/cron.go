@@ -1,6 +1,8 @@
 package cron
 
 import (
+	"bolapi/internal/pkg/bolproto"
+	"bolapi/internal/pkg/bolpy_client"
 	"bolapi/internal/pkg/crypto_compare"
 	"bolapi/internal/pkg/database"
 	"bolapi/internal/pkg/models"
@@ -12,13 +14,16 @@ import (
 
 type Worker struct {
 	CryptoCompareClient *crypto_compare.CryptoCompareClient
+	BolpyClient         *bolpy_client.BolpyClient
 	DB                  database.DBInterface
 }
 
 func (cW *Worker) Start() error {
 	c := cron.New()
 	err := c.AddFunc("@every 2s", func() {
-		_ = cW.takePriceSnapshot()
+		currentPrice, _ := cW.takePriceSnapshot()
+		priceEvaluationResponse, _ := cW.evaluatePrice(currentPrice)
+		log.Println(priceEvaluationResponse)
 	})
 
 	if err != nil {
@@ -29,7 +34,7 @@ func (cW *Worker) Start() error {
 	return nil
 }
 
-func (cW *Worker) takePriceSnapshot() error {
+func (cW *Worker) takePriceSnapshot() (*float64, error) {
 	log.Println("taking price snapshot...")
 	currentPrice, _ := cW.CryptoCompareClient.GetCurrentPrice("ETH", "USD")
 
@@ -44,9 +49,19 @@ func (cW *Worker) takePriceSnapshot() error {
 
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 
 	log.Println("successfully took price snapshot!")
-	return nil
+	return currentPrice, nil
+}
+
+func (cW *Worker) evaluatePrice(price *float64) (*bolproto.PriceEvaluationResponse, error) {
+	return cW.BolpyClient.EvaluatePrice(&bolproto.PriceEvaluationRequest{
+		CurrentPrice: &bolproto.Price{
+			Price:     float32(*price),
+			Timestamp: time.Now().Unix(),
+		},
+		HistoricalPrices: nil,
+	})
 }
