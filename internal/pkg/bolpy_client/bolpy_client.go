@@ -44,5 +44,6 @@ func (bC *BolpyClient) EvaluatePrice(req *bolproto.PriceEvaluationRequest) (*bol
 		log.Fatalln(err)
 		return nil, err
 	}
+
 	return r, nil
 }
