@@ -57,11 +57,21 @@ func (cW *Worker) takePriceSnapshot() (*float64, error) {
 }
 
 func (cW *Worker) evaluatePrice(price *float64) (*bolproto.PriceEvaluationResponse, error) {
+	// should fetch the historical prices in here
+	priceSnapshotRepo := repositories.NewPriceSnapshotRepository(cW.DB)
+	historicalPriceSnapshots, err := priceSnapshotRepo.GetLatest(15)
+
+	if err != nil {
+		return nil, err
+	}
+
 	return cW.BolpyClient.EvaluatePrice(&bolproto.PriceEvaluationRequest{
-		CurrentPrice: &bolproto.Price{
-			Price:     float32(*price),
-			Timestamp: time.Now().Unix(),
-		},
-		HistoricalPrices: nil,
+		CurrentPrice:     float32(*price),
+		HistoricalPrices: historicalPriceSnapshots.TransformToFloatSlice(),
 	})
+}
+
+func (cW *Worker) savePriceEvaluationResponse(priceEvaluationResponse *bolproto.PriceEvaluationResponse) error {
+
+	return nil
 }
