@@ -1,0 +1,1 @@
+SELECT * FROM price_snapshots ORDER BY created_time DESC LIMIT 5
