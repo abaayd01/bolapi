@@ -2,7 +2,6 @@ package bolpy_client
 
 import (
 	"bolapi/internal/pkg/bolproto"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -15,7 +14,7 @@ func TestEvaluatePriceViaGrpc(t *testing.T) {
 
 	var historicalPrices []float32
 
-	for i := 100; i >= 0; i-- {
+	for i := 0; i <= 100; i++ {
 		historicalPrices = append(historicalPrices, float32(i))
 	}
 
@@ -23,8 +22,6 @@ func TestEvaluatePriceViaGrpc(t *testing.T) {
 		CurrentPrice:     currentPrice,
 		HistoricalPrices: historicalPrices,
 	})
-
-	spew.Dump(r)
 
 	assert.Equal(t, "BUY", r.Action)
 }
