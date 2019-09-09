@@ -21,8 +21,9 @@ type Worker struct {
 func (cW *Worker) Start() error {
 	c := cron.New()
 	err := c.AddFunc("@every 2s", func() {
-		currentPrice, _ := cW.takePriceSnapshot()
-		priceEvaluationResponse, _ := cW.evaluatePrice(currentPrice)
+		priceSnapshot, _ := cW.takePriceSnapshot()
+		priceEvaluationResponse, _ := cW.evaluatePriceSnapshot(priceSnapshot)
+		_ = cW.savePriceEvaluationResponse(priceEvaluationResponse, priceSnapshot)
 		log.Println(priceEvaluationResponse)
 	})
 
@@ -34,7 +35,7 @@ func (cW *Worker) Start() error {
 	return nil
 }
 
-func (cW *Worker) takePriceSnapshot() (*float64, error) {
+func (cW *Worker) takePriceSnapshot() (*models.PriceSnapshot, error) {
 	log.Println("taking price snapshot...")
 	currentPrice, _ := cW.CryptoCompareClient.GetCurrentPrice("ETH", "USD")
 
@@ -45,7 +46,7 @@ func (cW *Worker) takePriceSnapshot() (*float64, error) {
 
 	priceSnapshotRepo := repositories.NewPriceSnapshotRepository(cW.DB)
 
-	err := priceSnapshotRepo.Insert(&priceSnapshot)
+	_, err := priceSnapshotRepo.Insert(&priceSnapshot)
 
 	if err != nil {
 		log.Println(err)
@@ -53,11 +54,10 @@ func (cW *Worker) takePriceSnapshot() (*float64, error) {
 	}
 
 	log.Println("successfully took price snapshot!")
-	return currentPrice, nil
+	return &priceSnapshot, nil
 }
 
-func (cW *Worker) evaluatePrice(price *float64) (*bolproto.PriceEvaluationResponse, error) {
-	// should fetch the historical prices in here
+func (cW *Worker) evaluatePriceSnapshot(priceSnapshot *models.PriceSnapshot) (*bolproto.PriceEvaluationResponse, error) {
 	priceSnapshotRepo := repositories.NewPriceSnapshotRepository(cW.DB)
 	historicalPriceSnapshots, err := priceSnapshotRepo.GetLatest(15)
 
@@ -66,12 +66,21 @@ func (cW *Worker) evaluatePrice(price *float64) (*bolproto.PriceEvaluationRespon
 	}
 
 	return cW.BolpyClient.EvaluatePrice(&bolproto.PriceEvaluationRequest{
-		CurrentPrice:     float32(*price),
+		CurrentPrice:     float32(priceSnapshot.Price),
 		HistoricalPrices: historicalPriceSnapshots.TransformToFloatSlice(),
 	})
 }
 
-func (cW *Worker) savePriceEvaluationResponse(priceEvaluationResponse *bolproto.PriceEvaluationResponse) error {
+func (cW *Worker) savePriceEvaluationResponse(priceEvaluationResponse *bolproto.PriceEvaluationResponse, priceSnapshot *models.PriceSnapshot) error {
+	priceEvaluation, err := models.NewPriceEvaluation(priceEvaluationResponse, priceSnapshot)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	priceEvaluationRepo := repositories.NewPriceEvaluationRepository(cW.DB)
+
+	_, _ = priceEvaluationRepo.Insert(priceEvaluation)
 
 	return nil
 }

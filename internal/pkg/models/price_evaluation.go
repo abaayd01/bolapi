@@ -7,12 +7,14 @@ import (
 
 type PriceEvaluation struct {
 	bolproto.PriceEvaluationResponse
-	CreatedTime time.Time
+	CreatedTime     time.Time
+	PriceSnapshotId int
 }
 
-func New(priceEvaluationResponse *bolproto.PriceEvaluationResponse) (*PriceEvaluation, error) {
+func NewPriceEvaluation(priceEvaluationResponse *bolproto.PriceEvaluationResponse, priceSnapshot *PriceSnapshot) (*PriceEvaluation, error) {
 	priceEvaluation := PriceEvaluation{
-		CreatedTime: time.Now(),
+		CreatedTime:     time.Now(),
+		PriceSnapshotId: priceSnapshot.Id,
 	}
 
 	priceEvaluation.PriceEvaluationResponse = *priceEvaluationResponse

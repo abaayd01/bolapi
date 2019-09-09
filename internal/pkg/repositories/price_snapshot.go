@@ -19,19 +19,21 @@ func NewPriceSnapshotRepository(DB database.DBInterface) *priceSnapshotRepositor
 	return &priceSnapshotRepository{DB: DB}
 }
 
-func (p *priceSnapshotRepository) Insert(priceSnapshot *models.PriceSnapshot) error {
+func (p *priceSnapshotRepository) Insert(priceSnapshot *models.PriceSnapshot) (*models.PriceSnapshot, error) {
 	query := `
-		INSERT INTO price_snapshots (created_time, price) VALUES ($1, $2)
+		INSERT INTO price_snapshots (created_time, price) VALUES ($1, $2) RETURNING price_snapshot_id
 	`
 
-	_, err := p.DB.Exec(query, priceSnapshot.CreatedTime, priceSnapshot.Price)
+	var id int
+	err := p.DB.QueryRow(query, priceSnapshot.CreatedTime, priceSnapshot.Price).Scan(&id)
 
 	if err != nil {
 		log.Printf("Error inserting PriceSnapshot")
-		return err
+		return nil, err
 	}
 
-	return nil
+	priceSnapshot.Id = id
+	return priceSnapshot, nil
 }
 
 // GetLatest returns up to the limit number of price snapshots.

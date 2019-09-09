@@ -28,7 +28,7 @@ func main() {
 	cronWorker := cron.Worker{
 		CryptoCompareClient: &cryptoCompareClient,
 		BolpyClient:         &bolpyClient,
-		DB:                  database.DBStub,
+		DB:                  database.DB,
 	}
 
 	err := cronWorker.Start()
