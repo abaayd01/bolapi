@@ -20,12 +20,7 @@ type Worker struct {
 
 func (cW *Worker) Start() error {
 	c := cron.New()
-	err := c.AddFunc("@every 2s", func() {
-		priceSnapshot, _ := cW.takePriceSnapshot()
-		priceEvaluationResponse, _ := cW.evaluatePriceSnapshot(priceSnapshot)
-		_ = cW.savePriceEvaluationResponse(priceEvaluationResponse, priceSnapshot)
-		log.Println(priceEvaluationResponse)
-	})
+	err := c.AddFunc("@every 2s", cW.CronHandler15m)
 
 	if err != nil {
 		return err
@@ -33,6 +28,30 @@ func (cW *Worker) Start() error {
 
 	c.Start()
 	return nil
+}
+
+func (cW *Worker) CronHandler15m() {
+	priceSnapshot, err := cW.takePriceSnapshot()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	priceEvaluationResponse, err := cW.evaluatePriceSnapshot(priceSnapshot)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	if priceEvaluationResponse.Action == "NONE" {
+		return
+	}
+
+	err = cW.savePriceEvaluationResponse(priceEvaluationResponse, priceSnapshot)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 }
 
 func (cW *Worker) takePriceSnapshot() (*models.PriceSnapshot, error) {
