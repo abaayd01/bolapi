@@ -22,6 +22,10 @@ func (s *stub) NamedExec(query string, arg interface{}) (sql.Result, error) {
 	return nil, nil
 }
 
+func (s *stub) NamedQuery(query string, arg interface{}) (*sqlx.Rows, error) {
+	return nil, nil
+}
+
 func (s *stub) Query(query string, args ...interface{}) (*sql.Rows, error) {
 	return nil, nil
 }
